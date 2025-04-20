@@ -3,7 +3,7 @@ import time
 
 # Mensagem Original: "Hello, my name is Diego"
 
-broker = "test.mosquitto.org"
+broker = "localhost"
 port = 1883
 sending_topic = 'sending'
 receiving_topic = 'receiving'

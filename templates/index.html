@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fase 1</title>
+    <style>
+        h2 {
+            text-align: center;
+        }
+        p {
+            text-align: center;
+        }
+        form {
+            width: 15%;
+            margin: 20px auto;
+            text-align: center; 
+            padding: 20px; 
+            border: 2px solid #525252; 
+        }
+    </style>
+</head>
+<body>
+    
+    <h2>Envie uma Mensagem ao Servidor</h2>
+    <form method="post">
+        <input name="message" type="text" placeholder="Digite a mensagem..." required />
+        <input type="submit" value="Enviar" />
+    </form>
+
+    <h2 style="text-align: center;">Imagem Recebida</h2>
+    {% if image %}
+        <div style="text-align: center;">
+            <img src="{{ url_for('get_image', filename=image) }}" width="400" style="margin:10px 0;" />
+        </div>
+    {% else %}
+        <p style="text-align: center;">Nenhuma imagem recebida ainda.</p>
+    {% endif %}
+
+</body>
+</html>
