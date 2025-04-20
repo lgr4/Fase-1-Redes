@@ -1,7 +1,17 @@
 import paho.mqtt.client as mqtt
 import time
+import ssl
 
-# Mensagem Original: "Hello, my name is Diego"
+'''
+Usar se for utilizar o broker público
+
+broker = "1f0cc1db7e91454bb2b88eabdb55bb5f.s1.eu.hivemq.cloud"
+port = 8883
+username = "hivemq.webclient.1745191351074"
+password = "$37:YKpE04mPtvw*n.RF"
+sending_topic = 'sending'
+receiving_topic = 'receiving'
+'''
 
 broker = "localhost"
 port = 1883
@@ -14,8 +24,15 @@ def on_message(client, userdata, msg):
     print(f"Nova resposta salva")
 
 client = mqtt.Client()
-client.connect(broker, port, 60)
 
+'''
+Usar se for utilizar o broker público
+
+client.username_pw_set(username, password)
+client.tls_set(tls_version=ssl.PROTOCOL_TLS)
+'''
+
+client.connect(broker, port)
 client.subscribe(receiving_topic)
 client.on_message = on_message
 
