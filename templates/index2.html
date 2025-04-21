@@ -3,6 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <title>Envio de Arquivo .txt via MQTT</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 500px;
+            margin: 30px auto;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            padding: 32px 24px 24px 24px;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        pre {
+            text-align: center;
+            color: #333;
+        }
+        .alert {
+            padding: 12px 18px;
+            border-radius: 5px;
+            margin-bottom: 18px;
+            font-size: 15px;
+            text-align: center;
+        }
+        .alert-danger {
+            background: #ffe5e5;
+            color: #b30000;
+            border: 1px solid #ffb3b3;
+        }
+        .alert-success {
+            background: #e5ffe5;
+            color: #006600;
+            border: 1px solid #b3ffb3;
+        }
+        form {
+            width: 40%;
+            margin: 0 auto 24px auto;
+            text-align: center;
+            padding: 20px 0;
+            border: 1.5px solid #525252;
+            background: #fafafa;
+            border-radius: 5px;
+        }
+        input[type="text"] {
+            padding: 8px;
+            width: 60%;
+            font-size: 16px;
+            border-radius: 4px;
+            border: 1px solid #aaa;
+            margin-right: 8px;
+        }
+        input[type="submit"] {
+            padding: 8px 18px;
+            font-size: 16px;
+            border-radius: 4px;
+            border: none;
+            background: #525252;
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        input[type="submit"]:hover {
+            background: #333;
+        } 
+    </style>
 </head>
 <body>
     <h1>Enviar Arquivo TXT</h1>
@@ -19,6 +94,10 @@
     {% if resposta %}
         <h2>Resposta Recebida:</h2>
         <pre>{{ resposta }}</pre>
+        <form action="/baixar" method="post">
+            <input type="hidden" name="resposta" value="{{ resposta }}">
+            <button type="submit">Baixar como .txt</button>
+        </form>
     {% endif %}
 </body>
 </html>
