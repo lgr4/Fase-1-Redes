@@ -1,9 +1,11 @@
 import socket
 import threading
 import os
-from flask import Flask, render_template, request, send_from_directory, flash, redirect, url_for
+from flask import Flask, render_template, request, send_from_directory, flash, redirect, url_for, jsonify
+from flask_cors import CORS
 
 app = Flask(__name__, static_folder='images')
+CORS(app)  # Habilitar CORS para todas as rotas
 app.secret_key = 'render-safe-key'  # Necessário para flash messages
 os.makedirs('images', exist_ok=True)
 os.makedirs('images_received', exist_ok=True)
@@ -46,19 +48,40 @@ def socket_receiver(message):
 @app.route('/', methods=['GET', 'POST'])
 def index():
     error_msg = None
+    success = False
+    image = received_images[-1] if received_images else None
+    
+    # Verificar se é uma requisição AJAX (API) ou navegador
+    is_api_request = request.headers.get('Content-Type') == 'application/x-www-form-urlencoded' and request.headers.get('Accept') != 'text/html'
+    
     if request.method == 'POST':
         msg = request.form.get('message')
         if msg and msg.isdigit() and 1 <= int(msg) <= 10:
             ok, err = socket_receiver(message=msg)
-            if not ok:
+            if ok:
+                success = True
+                image = received_images[-1] if received_images else None
+            else:
                 error_msg = f"Não foi possível conectar ao servidor TCP. Funcionalidade limitada no ambiente Render. Erro: {err}"
                 flash(error_msg, 'danger')
-    image = received_images[-1] if received_images else None
+    
+    # Responder com JSON para requisições API
+    if request.method == 'GET' and request.headers.get('Accept') == 'application/json' or is_api_request:
+        return jsonify({
+            'success': success,
+            'error': error_msg,
+            'image': image
+        })
+    
+    # Responder com HTML para navegador
     return render_template('index.html', image=image)
 
 @app.route('/images/<filename>')
 def get_image(filename):
-    return send_from_directory('images_received', filename)
+    # Adicionar cabeçalhos CORS para permitir acesso de outros domínios
+    response = send_from_directory('images_received', filename)
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    return response
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
