@@ -121,7 +121,7 @@
         <h1>Envio de Arquivo .txt via MQTT</h1>
         <div id="alert-message" class="alert"></div>
         
-        <form id="upload-form">
+        <form id="upload-form" enctype="multipart/form-data">
             <input type="file" id="arquivo" name="arquivo" accept=".txt" required>
             <button type="submit">Enviar</button>
         </form>
@@ -172,20 +172,17 @@
                         return;
                     }
                     
-                    // Simular o envio MQTT usando o endpoint existente
-                    // Enviamos o conteúdo do arquivo como mensagem
-                    const formData = new URLSearchParams();
-                    formData.append('message', conteudo);
+                    // Usar a rota /upload do client_mqtt.py
+                    // Preparar o FormData com o arquivo
+                    const formData = new FormData();
+                    formData.append('arquivo', file);
                     
                     // Mostrar indicador de carregamento
                     document.getElementById('loading').style.display = 'block';
                     document.getElementById('upload-form').style.display = 'none';
                     
-                    const response = await fetch(`${API_URL}`, {
+                    const response = await fetch(`${API_URL}/upload`, {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                        },
                         body: formData
                     });
                     
@@ -239,19 +236,34 @@
         document.getElementById('download-form').addEventListener('submit', function(e) {
             e.preventDefault();
             
+            // Usar a rota /baixar do client_mqtt.py
             const resposta = document.getElementById('resposta-hidden').value;
-            const blob = new Blob([resposta], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
             
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'resposta_mqtt.txt';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
+            // Criar um formulário para enviar a resposta para o servidor
+            const formData = new FormData();
+            formData.append('resposta', resposta);
             
-            showAlert('Arquivo de resposta baixado com sucesso!', 'success');
+            // Fazer uma requisição POST para a rota /baixar
+            fetch(`${API_URL}/baixar`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.blob())
+            .then(blob => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'resposta_mqtt.txt';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                showAlert('Arquivo de resposta baixado com sucesso!', 'success');
+            })
+            .catch(error => {
+                showAlert(`Erro ao baixar o arquivo: ${error.message}`, 'danger');
+            });
         });
         
         function showAlert(message, type) {
