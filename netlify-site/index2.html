@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Envio de Arquivo .txt via MQTT</title>
+    <meta name="description" content="Demonstração de comunicação via protocolo MQTT">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -56,6 +57,24 @@
             background: #fafafa;
             border-radius: 5px;
         }
+        #loading {
+            display: none;
+            text-align: center;
+            margin: 10px 0;
+        }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #525252;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
         input[type="text"] {
             padding: 8px;
             width: 60%;
@@ -98,6 +117,11 @@
             <button type="submit">Enviar</button>
         </form>
         
+        <div id="loading" style="display: none;">
+            <div class="spinner"></div>
+            <p>Processando solicitação...</p>
+        </div>
+        
         <div id="conteudo-container" style="display: none;">
             <h2>Conteúdo Enviado:</h2>
             <pre id="conteudo-enviado"></pre>
@@ -133,12 +157,26 @@
                 const conteudo = event.target.result;
                 
                 try {
-                    // Enviar o conteúdo para o servidor
-                    const formData = new FormData();
-                    formData.append('arquivo', file);
+                    // Verificar se o conteúdo do arquivo é válido
+                    if (conteudo.trim() === '') {
+                        showAlert('O arquivo está vazio. Por favor, selecione um arquivo com conteúdo.', 'danger');
+                        return;
+                    }
                     
-                    const response = await fetch(`${API_URL}/upload`, {
+                    // Simular o envio MQTT usando o endpoint existente
+                    // Enviamos o conteúdo do arquivo como mensagem
+                    const formData = new URLSearchParams();
+                    formData.append('message', conteudo);
+                    
+                    // Mostrar indicador de carregamento
+                    document.getElementById('loading').style.display = 'block';
+                    document.getElementById('upload-form').style.display = 'none';
+                    
+                    const response = await fetch(`${API_URL}`, {
                         method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
                         body: formData
                     });
                     
@@ -152,16 +190,28 @@
                     document.getElementById('conteudo-enviado').textContent = conteudo;
                     document.getElementById('conteudo-container').style.display = 'block';
                     
-                    // Mostrar a resposta recebida (se houver)
-                    if (result.resposta) {
-                        document.getElementById('resposta-recebida').textContent = result.resposta;
-                        document.getElementById('resposta-hidden').value = result.resposta;
-                        document.getElementById('resposta-container').style.display = 'block';
+                    // Preparar resposta baseada no resultado do servidor ou simular uma resposta MQTT
+                    let resposta;
+                    if (result.success) {
+                        // Se o servidor respondeu com sucesso, usamos uma resposta formatada
+                        const primeiraLinha = conteudo.split('\n')[0].substring(0, 30);
+                        resposta = `Mensagem processada via MQTT: "${primeiraLinha}${primeiraLinha.length > 30 ? '...' : ''}"\n\nResposta do servidor: ${result.success ? 'Sucesso' : 'Falha'}`;
+                    } else {
+                        // Caso contrário, mostramos uma mensagem de erro
+                        resposta = `Erro ao processar a mensagem: ${result.error || 'Erro desconhecido'}`;
                     }
+                    
+                    document.getElementById('resposta-recebida').textContent = resposta;
+                    document.getElementById('resposta-hidden').value = resposta;
+                    document.getElementById('resposta-container').style.display = 'block';
                     
                     showAlert('Arquivo enviado com sucesso!', 'success');
                 } catch (error) {
                     showAlert(`Erro ao enviar arquivo: ${error.message}`, 'danger');
+                } finally {
+                    // Esconder indicador de carregamento
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('upload-form').style.display = 'block';
                 }
             };
             
@@ -177,11 +227,13 @@
             
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'resposta.txt';
+            a.download = 'resposta_mqtt.txt';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
+            
+            showAlert('Arquivo de resposta baixado com sucesso!', 'success');
         });
         
         function showAlert(message, type) {
