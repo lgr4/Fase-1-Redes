@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Envio de Arquivo .txt via MQTT</title>
+</head>
+<body>
+    <h1>Enviar Arquivo TXT</h1>
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        <input type="file" name="arquivo" accept=".txt" required>
+        <button type="submit">Enviar</button>
+    </form>
+
+    {% if conteudo %}
+        <h2>Conteúdo Enviado:</h2>
+        <pre>{{ conteudo }}</pre>
+    {% endif %}
+
+    {% if resposta %}
+        <h2>Resposta Recebida:</h2>
+        <pre>{{ resposta }}</pre>
+    {% endif %}
+</body>
+</html>
