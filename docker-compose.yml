@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  netprotocolhub:
+    build: .
+    ports:
+      - "5000:5000"
+      - "8082:8082"
+    volumes:
+      - ./images:/app/images
+      - ./images_received:/app/images_received
+    restart: always
