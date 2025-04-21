@@ -21,5 +21,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Expor portas
 EXPOSE 5000 8082 8883
 
-# Rodar os serviços
-CMD ["sh", "-c", "python server.py & python server_mqtt.py & python client.py & python client_mqtt.py"]
+# Rodar os serviços (client.py agora contém as funcionalidades MQTT)
+CMD ["sh", "-c", "python server.py & python server_mqtt.py & python client.py"]
