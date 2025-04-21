@@ -11,6 +11,11 @@
             margin: 0;
             padding: 0;
         }
+        .protocol-switch {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+        }
         .container {
             max-width: 500px;
             margin: 30px auto;
@@ -94,6 +99,9 @@
     </style>
 </head>
 <body>
+    <a href="index2.html" class="protocol-switch">
+        <button id="protocol-btn">MQTT</button>
+    </a>
     <div class="container">
         <h2>Envie uma Mensagem ao Servidor</h2>
         <div id="alert-message" class="alert"></div>
