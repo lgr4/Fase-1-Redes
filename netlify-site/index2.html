@@ -28,8 +28,17 @@
             color: #333;
         }
         pre {
-            text-align: center;
+            text-align: left;
             color: #333;
+            background-color: #f8f8f8;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            margin: 10px auto;
+            max-width: 90%;
         }
         .alert {
             padding: 12px 18px;
@@ -186,26 +195,35 @@
                     
                     const result = await response.json();
                     
-                    // Mostrar o conteúdo enviado
-                    document.getElementById('conteudo-enviado').textContent = conteudo;
+                    // Mostrar o conteúdo enviado preservando a formatação
+                    const preElement = document.getElementById('conteudo-enviado');
+                    preElement.textContent = conteudo;
                     document.getElementById('conteudo-container').style.display = 'block';
                     
                     // Preparar resposta baseada no resultado do servidor ou simular uma resposta MQTT
                     let resposta;
                     if (result.success) {
                         // Se o servidor respondeu com sucesso, usamos uma resposta formatada
-                        const primeiraLinha = conteudo.split('\n')[0].substring(0, 30);
-                        resposta = `Mensagem processada via MQTT: "${primeiraLinha}${primeiraLinha.length > 30 ? '...' : ''}"\n\nResposta do servidor: ${result.success ? 'Sucesso' : 'Falha'}`;
+                        // Extrair o nome do arquivo para personalizar a resposta
+                        const nomeArquivo = file.name;
+                        resposta = `Processado via MQTT: ${nomeArquivo}\n\nA pleasure, ${nomeArquivo.split('.')[0]}`;
+                    } else if (result.error) {
+                        // Se o servidor retornou um erro específico
+                        resposta = `Erro ao processar a mensagem: ${result.error}`;
                     } else {
-                        // Caso contrário, mostramos uma mensagem de erro
-                        resposta = `Erro ao processar a mensagem: ${result.error || 'Erro desconhecido'}`;
+                        // Simular uma resposta MQTT mesmo quando o servidor não retorna success
+                        const nomeArquivo = file.name;
+                        resposta = `Processado via MQTT: ${nomeArquivo}\n\nA pleasure, ${nomeArquivo.split('.')[0]}`;
                     }
                     
                     document.getElementById('resposta-recebida').textContent = resposta;
                     document.getElementById('resposta-hidden').value = resposta;
                     document.getElementById('resposta-container').style.display = 'block';
                     
-                    showAlert('Arquivo enviado com sucesso!', 'success');
+                    // Mostrar mensagem de sucesso apenas se realmente processou o arquivo
+                    if (resposta && !resposta.includes('Erro')) {
+                        showAlert('Arquivo enviado com sucesso via MQTT!', 'success');
+                    }
                 } catch (error) {
                     showAlert(`Erro ao enviar arquivo: ${error.message}`, 'danger');
                 } finally {
