@@ -1,0 +1,13 @@
+version: '3'
+services:
+  mqtt-app:
+    build: .
+    ports:
+      - "5001:5001"
+      - "8883:8883"
+    volumes:
+      - ../client_mqtt.py:/app/client_mqtt.py
+      - ../server_mqtt.py:/app/server_mqtt.py
+      - ../templates:/app/templates
+      - ../requirements.txt:/app/requirements.txt
+    restart: unless-stopped

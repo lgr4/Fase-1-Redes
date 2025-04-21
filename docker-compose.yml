@@ -5,9 +5,7 @@ services:
     build: .
     ports:
       - "5000:5000"
-      - "5001:5001"
       - "8082:8082"
-      - "8883:8883"
     volumes:
       - ./images:/app/images
       - ./images_received:/app/images_received
