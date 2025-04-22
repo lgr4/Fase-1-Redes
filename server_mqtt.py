@@ -2,7 +2,7 @@ import paho.mqtt.client as mqtt
 import ssl
 
 broker = "1f0cc1db7e91454bb2b88eabdb55bb5f.s1.eu.hivemq.cloud"
-port = 8883
+port_broker = 8883
 username = "hivemq.webclient.1745191351074"
 password = "$37:YKpE04mPtvw*n.RF"
 sending_topic = 'sending'
@@ -24,5 +24,5 @@ client.username_pw_set(username, password)
 client.tls_set()
 client.on_connect = on_connect
 client.on_message = on_message
-client.connect(broker, port)
+client.connect(broker, port_broker)
 client.loop_forever()
