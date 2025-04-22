@@ -1,12 +1,31 @@
 version: '3'
 
 services:
+  # Serviço HTTP original
   netprotocolhub:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "5000:5000"
       - "8082:8082"
     volumes:
       - ./images:/app/images
       - ./images_received:/app/images_received
+    restart: always
+
+  # Serviço MQTT
+  mqtt-app:
+    build:
+      context: .
+      dockerfile: Dockerfile.mqtt
+    ports:
+      - "5001:5001"
+      - "8883:8883"
+    volumes:
+      - ./client_mqtt.py:/app/client_mqtt.py
+      - ./server_mqtt.py:/app/server_mqtt.py
+      - ./templates:/app/templates
+      - ./requirements.txt:/app/requirements.txt
+      - ./message.txt:/app/message.txt
     restart: always
