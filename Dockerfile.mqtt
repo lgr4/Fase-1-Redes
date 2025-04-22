@@ -17,4 +17,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 EXPOSE 5002 8080 8883
 
 # Rodar os serviços MQTT
-CMD ["sh", "-c", "python server_mqtt.py & python client_mqtt.py"]
+CMD ["sh", "-c", "python server_mqtt.py & python client_mqtt_serv.py"]
