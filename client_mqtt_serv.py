@@ -4,8 +4,11 @@ import time
 import ssl
 import os
 from io import BytesIO
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)  # Habilitar CORS para todas as rotas
+app.secret_key = 'render-safe-key'  # Necessário para flash messages
 
 broker = "1f0cc1db7e91454bb2b88eabdb55bb5f.s1.eu.hivemq.cloud"
 port_broker = 8883

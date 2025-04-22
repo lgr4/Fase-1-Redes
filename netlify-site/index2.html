@@ -189,7 +189,8 @@
                     
                     const response = await fetch(`${API_URL}/upload`, {
                         method: 'POST',
-                        body: formData
+                        body: formData,
+                        mode: 'cors'
                     });
                     
                     if (!response.ok) {
