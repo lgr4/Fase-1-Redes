@@ -2,6 +2,7 @@ from flask import Flask, render_template, request,send_file
 import paho.mqtt.client as mqtt
 import time
 import ssl
+import os
 from io import BytesIO
 
 app = Flask(__name__)
@@ -66,4 +67,5 @@ def baixar():
     )
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5001)
+    port = int(os.environ.get('PORT', 5001))
+    app.run(debug=False, host='0.0.0.0', port=port)

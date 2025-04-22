@@ -13,7 +13,8 @@ COPY message.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Expor portas
-EXPOSE 5001 8883
+# Cloud Run espera que o contêiner escute na porta 8080
+EXPOSE 5001 8080 8883
 
 # Rodar os serviços MQTT
 CMD ["sh", "-c", "python server_mqtt.py & python client_mqtt.py"]
