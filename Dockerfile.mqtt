@@ -3,7 +3,7 @@ FROM python:3.9-slim
 WORKDIR /app
 
 # Copiar arquivos
-COPY client_mqtt.py .
+COPY client_mqtt_serv.py .
 COPY server_mqtt.py .
 COPY requirements.txt .
 COPY templates/ ./templates/
@@ -14,7 +14,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Expor portas
 # Cloud Run espera que o contêiner escute na porta 8080
-EXPOSE 5001 8080 8883
+EXPOSE 5002 8080 8883
 
 # Rodar os serviços MQTT
 CMD ["sh", "-c", "python server_mqtt.py & python client_mqtt.py"]
