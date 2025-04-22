@@ -154,7 +154,7 @@
 
     <script>
         // Configuração do servidor
-        const API_URL = 'https://netprotocol-mqtt-171160732761.southamerica-east1.run.app/';
+        const API_URL = 'https://netprotocol-mqtt-171160732761.southamerica-east1.run.app';
         
         document.getElementById('upload-form').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -190,7 +190,11 @@
                     const response = await fetch(`${API_URL}/upload`, {
                         method: 'POST',
                         body: formData,
-                        mode: 'cors'
+                        mode: 'cors',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
+                        }
                     });
                     
                     if (!response.ok) {
@@ -204,20 +208,16 @@
                     preElement.textContent = conteudo;
                     document.getElementById('conteudo-container').style.display = 'block';
                     
-                    // Preparar resposta baseada no resultado do servidor ou simular uma resposta MQTT
+                    // Preparar resposta baseada no resultado do servidor
                     let resposta;
                     if (result.success) {
                         // Se o servidor respondeu com sucesso, usamos uma resposta formatada
                         // Extrair o nome do arquivo para personalizar a resposta
                         const nomeArquivo = file.name;
-                        resposta = `Processado via MQTT: ${nomeArquivo}\n\nA pleasure, ${nomeArquivo.split('.')[0]}`;
+                        resposta = `${result.response}`;
                     } else if (result.error) {
                         // Se o servidor retornou um erro específico
                         resposta = `Erro ao processar a mensagem: ${result.error}`;
-                    } else {
-                        // Simular uma resposta MQTT mesmo quando o servidor não retorna success
-                        const nomeArquivo = file.name;
-                        resposta = `Processado via MQTT: ${nomeArquivo}\n\nA pleasure, ${nomeArquivo.split('.')[0]}`;
                     }
                     
                     document.getElementById('resposta-recebida').textContent = resposta;
@@ -243,17 +243,16 @@
         document.getElementById('download-form').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            // Usar a rota /baixar do client_mqtt.py
+            // Usar a rota /baixar do client_mqtt_serv.py
             const resposta = document.getElementById('resposta-hidden').value;
             
-            // Criar um formulário para enviar a resposta para o servidor
             const formData = new FormData();
             formData.append('resposta', resposta);
             
-            // Fazer uma requisição POST para a rota /baixar
             fetch(`${API_URL}/baixar`, {
                 method: 'POST',
-                body: formData
+                body: formData,
+                mode: 'cors',
             })
             .then(response => response.blob())
             .then(blob => {

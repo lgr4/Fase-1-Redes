@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request,send_file
+from flask import Flask, render_template, request,send_file, jsonify
 import paho.mqtt.client as mqtt
 import time
 import ssl
@@ -35,7 +35,7 @@ def upload():
     arquivo = request.files["arquivo"]
     conteudo = arquivo.read().decode("utf-8")
 
-    client = mqtt.Client()
+    client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
     client.username_pw_set(username, password)
     client.tls_set()
     client.on_message = on_message
@@ -53,7 +53,17 @@ def upload():
     client.loop_stop()
     client.disconnect()
 
-    return render_template("index2.html", conteudo=conteudo, resposta=resposta_mqtt or "Sem resposta recebida")
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest' or request.headers.get('Accept') == 'application/json':
+        # Requisição AJAX - Responder com JSON
+        return jsonify({
+            "success": True,
+            "conteudo": conteudo,
+            "response": resposta_mqtt or "Sem resposta recebida",
+            "filename": arquivo.filename
+        })
+    else:
+        # Requisição tradicional - Responder com HTML
+        return render_template("index2.html", conteudo=conteudo, resposta=resposta_mqtt or "Sem resposta recebida")
 
 @app.route("/baixar", methods=["POST"])
 def baixar():
